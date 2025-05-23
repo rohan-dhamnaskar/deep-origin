@@ -1,5 +1,11 @@
 import Hapi from "@hapi/hapi";
 import { Request, ResponseToolkit } from "@hapi/hapi";
+import { initRedisClient, closeRedisConnection } from "./connections/redis";
+import {
+  initPostgresClient,
+  closePostgresConnection,
+} from "./connections/postgres";
+import { registerShortenerRoutes } from "./routes/shortenerRoutes";
 
 const init = async () => {
   const server = Hapi.server({
@@ -7,12 +13,23 @@ const init = async () => {
     host: "0.0.0.0",
   });
 
+  // Register routes
+  await Promise.all([initRedisClient(), initPostgresClient()]);
+
+  registerShortenerRoutes(server);
+
+  // Base route
   server.route({
     method: "GET",
     path: "/",
     handler: (request: Request, h: ResponseToolkit) => {
       return "Welcome to the URL Shortener API!";
     },
+  });
+
+  // Server shutdown handler
+  server.events.on("stop", async () => {
+    await Promise.all([closeRedisConnection(), closePostgresConnection()]);
   });
 
   await server.start();
