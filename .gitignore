@@ -14,7 +14,7 @@ frontend/build
 .DS_Store
 
 # ide
-../.idea
+.idea
 
 *.dockerfile
 .dockerignore

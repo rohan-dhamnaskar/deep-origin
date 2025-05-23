@@ -18,7 +18,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@hapi/hapi": "^21.3.2"
+    "@hapi/catbox-redis": "^7.0.2",
+    "@hapi/hapi": "^21.3.2",
+    "@types/hapi__catbox": "^10.2.6",
+    "ioredis": "^5.6.1",
+    "pg": "^8.16.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.27.0",
