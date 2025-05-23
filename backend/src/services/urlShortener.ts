@@ -2,11 +2,11 @@ import crypto from "crypto";
 import {
   setItem as setRedisItem,
   getItem as getRedisItem,
-} from "../connections/redis";
+} from "../lib/urlShortenerRedis";
 import {
   setItem as setPostgresItem,
   getItem as getPostgresItem,
-} from "../connections/postgres";
+} from "../lib/urlShortenerModel";
 
 /**
  * Shortens a given URL and stores it in Redis.

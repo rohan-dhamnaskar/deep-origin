@@ -2,8 +2,6 @@ import { Client } from "@hapi/catbox";
 import { Engine } from "@hapi/catbox-redis";
 
 let catboxClient: Client<string> | null = null;
-const SEGMENT = "urlshortener";
-const EXPIRATION = 30 * 24 * 60 * 60 * 1000; // 30 days in milliseconds
 
 export const initRedisClient = async (): Promise<Client<string>> => {
   try {
@@ -26,17 +24,6 @@ export const getCatboxClient = (): Client<string> => {
     throw new Error("Catbox client not initialized");
   }
   return catboxClient;
-};
-
-export const setItem = async (key: string, value: string): Promise<void> => {
-  const client = getCatboxClient();
-  await client.set({ segment: SEGMENT, id: key }, value, EXPIRATION);
-};
-
-export const getItem = async (key: string): Promise<string | null> => {
-  const client = getCatboxClient();
-  const result = await client.get({ segment: SEGMENT, id: key });
-  return result ? result.item : null;
 };
 
 export const closeRedisConnection = async (): Promise<void> => {
