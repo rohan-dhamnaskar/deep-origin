@@ -1,0 +1,30 @@
+{
+  "name": "hapi-typescript-backend",
+  "version": "1.0.0",
+  "description": "A sample Hapi.js backend with TypeScript",
+  "main": "dist/server.js",
+  "scripts": {
+    "build": "node_modules/.bin/tsc",
+    "start": "node dist/server.js",
+    "no-dev": "node_modules/.bin/nodemon --exec ts-node src/server.ts",
+    "dev": "nodemon --watch src --ext ts --exec 'ts-node src/server.ts'",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "hapi",
+    "typescript",
+    "backend"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@hapi/hapi": "^21.3.2"
+  },
+  "devDependencies": {
+    "@types/hapi__hapi": "^21.0.0",
+    "@types/node": "^20.17.50",
+    "nodemon": "^3.1.10",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  }
+}
