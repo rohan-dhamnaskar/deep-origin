@@ -1,0 +1,20 @@
+node_modules/
+
+# Next.js
+.next/
+out/
+frontend/.next/
+frontend/out/
+frontend/build
+
+# TypeScript
+*.tsbuildinfo
+
+# Debug
+.DS_Store
+
+# ide
+../.idea
+
+*.dockerfile
+.dockerignore
