@@ -21,10 +21,14 @@
     "@hapi/hapi": "^21.3.2"
   },
   "devDependencies": {
+    "@eslint/js": "^9.27.0",
     "@types/hapi__hapi": "^21.0.0",
     "@types/node": "^20.17.50",
+    "eslint": "^9.27.0",
     "nodemon": "^3.1.10",
+    "prettier": "3.5.3",
     "ts-node": "^10.9.2",
-    "typescript": "^5.3.3"
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.32.1"
   }
 }
