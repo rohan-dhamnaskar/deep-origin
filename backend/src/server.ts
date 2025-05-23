@@ -1,6 +1,10 @@
 import Hapi from "@hapi/hapi";
 import { Request, ResponseToolkit } from "@hapi/hapi";
 import { initRedisClient, closeRedisConnection } from "./connections/redis";
+import {
+  initPostgresClient,
+  closePostgresConnection,
+} from "./connections/postgres";
 import { registerShortenerRoutes } from "./routes/shortenerRoutes";
 
 const init = async () => {
@@ -9,10 +13,9 @@ const init = async () => {
     host: "0.0.0.0",
   });
 
-  // Initialize Redis client
-  await initRedisClient();
-
   // Register routes
+  await Promise.all([initRedisClient(), initPostgresClient()]);
+
   registerShortenerRoutes(server);
 
   // Base route
@@ -26,7 +29,7 @@ const init = async () => {
 
   // Server shutdown handler
   server.events.on("stop", async () => {
-    await closeRedisConnection();
+    await Promise.all([closeRedisConnection(), closePostgresConnection()]);
   });
 
   await server.start();
