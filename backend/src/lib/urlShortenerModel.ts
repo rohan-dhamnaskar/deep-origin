@@ -64,13 +64,25 @@ export const getAllItems = async (): Promise<any[]> => {
   }
 };
 
-export const deleteItem = async (shortCode: string): Promise<void> => {
+export const deleteItem = async (shortCode: string): Promise<boolean> => {
   const client = getPostgresClient();
+  let result = false;
   try {
-    await client.query("DELETE FROM shortened_urls WHERE short_code = $1", [
-      shortCode,
-    ]);
+    const response = await client.query(
+      "DELETE FROM shortened_urls WHERE short_code = $1",
+      [shortCode],
+    );
+    const numRowsDeleted = response?.rowCount;
+    if (!numRowsDeleted) {
+      console.log("No rows deleted, short code may not exist.");
+    } else {
+      console.log(
+        `Deleted ${numRowsDeleted} row(s) with short code: ${shortCode}`,
+      );
+      result = true;
+    }
   } catch (err) {
     console.error("Error deleting from PostgreSQL:", err);
   }
+  return result;
 };
