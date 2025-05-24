@@ -1,24 +1,24 @@
-import { getCatboxClient } from "../connections/redis";
+import { getRedisClient } from "../connections/redis";
 
-const SEGMENT = "urlshortener";
-const EXPIRATION = 30 * 24 * 60 * 60 * 1000; // 30 days in milliseconds
+const PREFIX = "urlshortener:";
+const EXPIRATION = 30 * 24 * 60 * 60; // 30 days in seconds (Redis expects seconds)
 
 export const setItem = async (key: string, value: string): Promise<void> => {
   try {
-    const client = getCatboxClient();
-    await client.set({ segment: SEGMENT, id: key }, value, EXPIRATION);
+    const client = getRedisClient();
+    await client.set(`${PREFIX}${key}`, value, "EX", EXPIRATION);
   } catch (error) {
     console.error("Error storing in Redis:", error);
+    throw error;
   }
 };
 
 export const getItem = async (key: string): Promise<string | null> => {
   try {
-    const client = getCatboxClient();
-    const result = await client.get({ segment: SEGMENT, id: key });
-    return result ? result.item : null;
+    const client = getRedisClient();
+    return await client.get(`${PREFIX}${key}`);
   } catch (error) {
     console.error("Error retrieving from Redis:", error);
-    return null;
+    throw error;
   }
 };

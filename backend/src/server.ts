@@ -29,7 +29,7 @@ const init = async () => {
 
   // Server shutdown handler
   server.events.on("stop", async () => {
-    await Promise.all([closeRedisConnection(), closePostgresConnection()]);
+    await Promise.all([closeRedisConnection() /*, closePostgresConnection()*/]);
   });
 
   await server.start();
