@@ -32,6 +32,7 @@ services:
     environment:
       - DATABASE_URL=postgres://postgres:postgres@postgres:5432/urlshortener
       - REDIS_URL=redis://redis:6379
+      - REDIS_HOST=redis
       - NODE_ENV=development
       - CHOKIDAR_USEPOLLING=true
 
