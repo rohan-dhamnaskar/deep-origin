@@ -1,34 +1,44 @@
-import { Client } from "@hapi/catbox";
-import { Engine } from "@hapi/catbox-redis";
+import Redis from "ioredis";
 
-let catboxClient: Client<string> | null = null;
+let redisClient: Redis | null = null;
 
-export const initRedisClient = async (): Promise<Client<string>> => {
+export const initRedisClient = async (): Promise<Redis> => {
   try {
-    // Pass the Engine constructor (not an instance) to the Client
-    catboxClient = new Client<string>(Engine, {
-      partition: "urlshortener",
+    redisClient = new Redis({
+      host: process.env.REDIS_HOST || "redis",
+      port: parseInt(process.env.REDIS_PORT || "6379"),
+      db: 0,
+      keyPrefix: "urlshortener:",
+      retryStrategy: (times) => {
+        const delay = Math.min(times * 50, 2000);
+        return delay;
+      },
     });
 
-    await catboxClient.start();
+    // Test the connection
+    await redisClient.ping();
     console.log("Redis connection established successfully");
-    return catboxClient;
+    return redisClient;
   } catch (err) {
     console.error("Failed to establish Redis connection:", err);
     throw err;
   }
 };
 
-export const getCatboxClient = (): Client<string> => {
-  if (!catboxClient) {
-    throw new Error("Catbox client not initialized");
+export const getRedisClient = (): Redis => {
+  if (!redisClient) {
+    throw new Error("Redis client not initialized");
   }
-  return catboxClient;
+  return redisClient;
+};
+
+export const getCatboxClient = (): Redis => {
+  return getRedisClient();
 };
 
 export const closeRedisConnection = async (): Promise<void> => {
-  if (catboxClient) {
-    await catboxClient.stop();
-    catboxClient = null;
+  if (redisClient) {
+    await redisClient.quit();
+    redisClient = null;
   }
 };
