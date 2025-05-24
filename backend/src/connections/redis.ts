@@ -1,10 +1,11 @@
-import Redis from "ioredis";
+import { Redis } from "ioredis";
+import IORedis from "ioredis";
 
 let redisClient: Redis | null = null;
 
 export const initRedisClient = async (): Promise<Redis> => {
   try {
-    redisClient = new Redis({
+    redisClient = new IORedis({
       host: process.env.REDIS_HOST || "redis",
       port: parseInt(process.env.REDIS_PORT || "6379"),
       db: 0,

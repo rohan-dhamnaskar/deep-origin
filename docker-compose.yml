@@ -36,6 +36,21 @@ services:
       - NODE_ENV=development
       - CHOKIDAR_USEPOLLING=true
 
+  frontend:
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true
+
 volumes:
   postgres_data:
   redis_data:
