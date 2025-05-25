@@ -8,8 +8,7 @@ export const setItem = async (key: string, value: string): Promise<void> => {
     const client = getRedisClient();
     await client.set(`${PREFIX}${key}`, value, "EX", EXPIRATION);
   } catch (error) {
-    console.error("Error storing in Redis:", error);
-    throw error;
+    console.error("Error retrieving from Redis:", error);
   }
 };
 
@@ -19,28 +18,33 @@ export const getItem = async (key: string): Promise<string | null> => {
     return await client.get(`${PREFIX}${key}`);
   } catch (error) {
     console.error("Error retrieving from Redis:", error);
-    throw error;
+    return null;
   }
 };
 
-export const getAllKeys = async (): Promise<string[]> => {
-  const keys: string[] = [];
-  let cursor = "0";
+export const getAllKeys = async (): Promise<string[] | null> => {
+  try {
+    const keys: string[] = [];
+    let cursor = "0";
 
-  const redisClient = getRedisClient();
-  do {
-    const [nextCursor, batch] = await redisClient.scan(
-      cursor,
-      "MATCH",
-      "*",
-      "COUNT",
-      100,
-    );
-    cursor = nextCursor;
-    keys.push(...batch);
-  } while (cursor !== "0");
+    const redisClient = getRedisClient();
+    do {
+      const [nextCursor, batch] = await redisClient.scan(
+        cursor,
+        "MATCH",
+        "*",
+        "COUNT",
+        100,
+      );
+      cursor = nextCursor;
+      keys.push(...batch);
+    } while (cursor !== "0");
 
-  return keys;
+    return keys;
+  } catch (error) {
+    console.error("Error retrieving keys from Redis:", error);
+    return null;
+  }
 };
 
 const flushSegment = async (): Promise<void> => {
