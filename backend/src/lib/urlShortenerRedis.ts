@@ -22,3 +22,34 @@ export const getItem = async (key: string): Promise<string | null> => {
     throw error;
   }
 };
+
+export const getAllKeys = async (): Promise<string[]> => {
+  const keys: string[] = [];
+  let cursor = "0";
+
+  const redisClient = getRedisClient();
+  do {
+    const [nextCursor, batch] = await redisClient.scan(
+      cursor,
+      "MATCH",
+      "*",
+      "COUNT",
+      100,
+    );
+    cursor = nextCursor;
+    keys.push(...batch);
+  } while (cursor !== "0");
+
+  return keys;
+};
+
+const flushSegment = async (): Promise<void> => {
+  try {
+    const client = getRedisClient();
+    await client.flushdb();
+    console.log("All keys flushed from Redis");
+  } catch (error) {
+    console.error("Error flushing Redis keys:", error);
+    throw error;
+  }
+};

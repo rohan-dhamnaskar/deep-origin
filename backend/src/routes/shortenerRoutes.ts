@@ -1,5 +1,9 @@
 import Hapi from "@hapi/hapi";
-import { shortenUrl, getOriginalUrl } from "../services/urlShortener";
+import {
+  shortenUrl,
+  getOriginalUrl,
+  getAllUrls,
+} from "../services/urlShortener";
 
 export const registerShortenerRoutes = (server: Hapi.Server): void => {
   server.route({
@@ -28,7 +32,7 @@ export const registerShortenerRoutes = (server: Hapi.Server): void => {
 
   server.route({
     method: "GET",
-    path: "/{shortCode}",
+    path: "/shorten/{shortCode}",
     handler: async (request, h) => {
       try {
         const shortCode = request.params.shortCode;
@@ -44,6 +48,37 @@ export const registerShortenerRoutes = (server: Hapi.Server): void => {
           .response({
             success: true,
             originalUrl,
+          })
+          .code(200);
+      } catch (err) {
+        console.error("Error retrieving URL:", err);
+        return h
+          .response({ success: false, error: "Failed to retrieve URL" })
+          .code(500);
+      }
+    },
+  });
+
+  server.route({
+    method: "GET",
+    path: "/shorten",
+    handler: async (request, h) => {
+      try {
+        const shortCode = request.params.shortCode;
+        const allUrls = await getAllUrls();
+        if (!allUrls) {
+          return h
+            .response({
+              success: false,
+              error: "Could not find any URLs stored",
+            })
+            .code(400);
+        }
+
+        return h
+          .response({
+            success: true,
+            allUrls,
           })
           .code(200);
       } catch (err) {

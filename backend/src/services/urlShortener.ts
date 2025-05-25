@@ -2,11 +2,20 @@ import crypto from "crypto";
 import {
   setItem as setRedisItem,
   getItem as getRedisItem,
+  getAllKeys as getAllRedisKeys,
 } from "../lib/urlShortenerRedis";
 import {
   setItem as setPostgresItem,
   getItem as getPostgresItem,
+  getAllItems as getAllPostgresItems,
 } from "../lib/urlShortenerModel";
+
+interface ShortenedURL {
+  original_url: string;
+  short_code: string;
+  user_Id?: string;
+  created_at?: Date;
+}
 
 /**
  * Shortens a given URL and stores it in Redis.
@@ -63,4 +72,32 @@ export const getOriginalUrl = async (
   }
 
   return cachedUrl;
+};
+
+export const getAllUrls = async (): Promise<ShortenedURL[] | null> => {
+  const allUrls = (await getAllPostgresItems()) as ShortenedURL[] | null;
+
+  if (!allUrls || allUrls.length === 0) {
+    console.log("No URLs found in PostgreSQL");
+    return null;
+  }
+
+  console.log(`Retrieved ${allUrls.length} URLs from PG`, allUrls);
+  await regenerateRedisCache(allUrls);
+
+  return allUrls;
+};
+
+const regenerateRedisCache = async (allUrls: ShortenedURL[]): Promise<void> => {
+  if (!allUrls || allUrls.length === 0) {
+    console.log("No URLs found in PostgreSQL, nothing to cache in Redis");
+    return;
+  }
+
+  for (const url of allUrls) {
+    console.log("For loop urls", url);
+    const { short_code: shortCode, original_url: originalUrl } = url;
+    await setRedisItem(shortCode, originalUrl);
+  }
+  console.log("Redis cache regenerated with all URLs from PostgreSQL");
 };
