@@ -64,7 +64,6 @@ export const registerShortenerRoutes = (server: Hapi.Server): void => {
     path: "/shorten",
     handler: async (request, h) => {
       try {
-        const shortCode = request.params.shortCode;
         const allUrls = await getAllUrls();
         if (!allUrls) {
           return h

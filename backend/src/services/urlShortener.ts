@@ -81,8 +81,6 @@ export const getAllUrls = async (): Promise<ShortenedURL[] | null> => {
     console.log("No URLs found in PostgreSQL");
     return null;
   }
-
-  console.log(`Retrieved ${allUrls.length} URLs from PG`, allUrls);
   await regenerateRedisCache(allUrls);
 
   return allUrls;
@@ -95,7 +93,6 @@ const regenerateRedisCache = async (allUrls: ShortenedURL[]): Promise<void> => {
   }
 
   for (const url of allUrls) {
-    console.log("For loop urls", url);
     const { short_code: shortCode, original_url: originalUrl } = url;
     await setRedisItem(shortCode, originalUrl);
   }
