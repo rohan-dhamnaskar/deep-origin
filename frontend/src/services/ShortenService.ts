@@ -1,5 +1,5 @@
 import { ShortenedUrl } from '@/types/ShortenedURL';
-
+import { API_BASE_URL } from '@/constants/constants';
 export interface APIErrorResponse {
   message: string;
   statusCode?: number;
@@ -19,11 +19,9 @@ export interface ShortenURLResponse {
   allUrls: ShortenedUrl[];
 }
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
-
 export const shortenURL = async (url: string): Promise<ShortenURLResponse> => {
   try {
-    const response = await fetch(`${BASE_URL}/shorten`, {
+    const response = await fetch(`${API_BASE_URL}/shorten`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'same-origin',
@@ -36,7 +34,8 @@ export const shortenURL = async (url: string): Promise<ShortenURLResponse> => {
       try {
         const errorData = JSON.parse(errorText);
         errorMessage = errorData.message || 'API request failed';
-      } catch (e) {
+      } catch (error) {
+        console.error(error);
         errorMessage = errorText || `Request failed with status ${response.status}`;
       }
       throw new APIError(errorMessage, response.status);
@@ -52,7 +51,7 @@ export const shortenURL = async (url: string): Promise<ShortenURLResponse> => {
 
 export const getUrlList = async (): Promise<ShortenedUrl[]> => {
   try {
-    const response = await fetch(`${BASE_URL}/shorten`, {
+    const response = await fetch(`${API_BASE_URL}/shorten`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'same-origin',
@@ -73,12 +72,12 @@ export const getUrlList = async (): Promise<ShortenedUrl[]> => {
 
 export const getUrl = async (shortCode: string): Promise<string> => {
   try {
-    const response = await fetch(`${BASE_URL}/shorten/${shortCode}`, {
+    const response = await fetch(`${API_BASE_URL}/shorten/${shortCode}`, {
       credentials: 'include',
     });
 
     if (!response.ok) {
-      throw new APIError(`Failed to get URL: ${response.statusText}`, response.status);
+      return '';
     }
 
     const data = await response.json();
