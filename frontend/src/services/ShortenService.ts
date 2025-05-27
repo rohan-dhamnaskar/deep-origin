@@ -1,9 +1,5 @@
 import { ShortenedUrl } from '@/types/ShortenedURL';
 import { API_BASE_URL } from '@/constants/constants';
-export interface APIErrorResponse {
-  message: string;
-  statusCode?: number;
-}
 
 export class APIError extends Error {
   statusCode: number;
@@ -15,11 +11,7 @@ export class APIError extends Error {
   }
 }
 
-export interface ShortenURLResponse {
-  allUrls: ShortenedUrl[];
-}
-
-export const shortenURL = async (url: string): Promise<ShortenURLResponse> => {
+export const shortenURL = async (url: string): Promise<ShortenedUrl> => {
   try {
     const response = await fetch(`${API_BASE_URL}/shorten`, {
       method: 'POST',
@@ -41,7 +33,8 @@ export const shortenURL = async (url: string): Promise<ShortenURLResponse> => {
       throw new APIError(errorMessage, response.status);
     }
 
-    return await response.json();
+    const data = await response.json();
+    return data.shortCodeRecord as ShortenedUrl;
   } catch (error) {
     console.error('Error shortening URL:', error);
     if (error instanceof APIError) throw error;

@@ -7,14 +7,14 @@ import { ResultDisplay } from '@/components/ResultDisplay';
 import { RecentURLs } from '@/components/RecentURLs';
 import { Toast } from '@/components/Toast';
 import './globals.css';
-import { shortenURL, getUrlList, getUrl } from '@/services/ShortenService';
-import { ShortenedUrl } from '../types/shortenedUrl';
+import { shortenURL, getUrlList } from '@/services/ShortenService';
+import { ShortenedUrl } from '../types/ShortenedURL';
 import { FRONTEND_BASE_URL } from '@/constants/constants';
 
 export default function URLShortener() {
   // create a sample array of URL items
 
-  // const [shortenedUrl, setShortenedUrl] = useState('');
+  const [shortenedUrl, setShortenedUrl] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   // const [recentUrls, setRecentUrls] = useState<URLItem[]>([]);
   // const [recentUrls, setRecentUrls] = useState<ShortenedUrl[]>(sampleUrls);
@@ -39,15 +39,22 @@ export default function URLShortener() {
     // setShortenedUrl('');
 
     try {
+      const currentDate = new Date().toISOString();
       // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // await new Promise((resolve) => setTimeout(resolve, 1000));
+      const shortCodeRecord = await shortenURL(url);
+      const { short_code: newShortenedUrl } = shortCodeRecord;
 
-      // Generate a random short code
-      // const shortCode = Math.random().toString(36).substring(2, 8);
-      // const newShortenedUrl = `https://short.url/${shortCode}`;
-
-      // setShortenedUrl(newShortenedUrl);
-      // setRecentUrls((prev) => [{ original: url, shortened: newShortenedUrl }, ...prev.slice(0, 4)]);
+      setShortenedUrl(newShortenedUrl);
+      // setAllUrls((prev) => [{ original: url, shortened: newShortenedUrl }, ...prev.slice(0, 4)]);
+      const currentAllUrls = allUrls;
+      currentAllUrls.unshift({
+        original_url: url,
+        short_code: shortenedUrl,
+        user_id: '',
+        created_at: currentDate,
+      });
+      setAllUrls(currentAllUrls);
     } catch (err) {
       console.error('Failed to shorten URL:', err);
     } finally {
@@ -72,7 +79,7 @@ export default function URLShortener() {
 
         <div className="card">
           <URLForm onSubmit={handleShortenUrl} isLoading={isLoading} />
-          {/*<ResultDisplay shortenedUrl={shortenedUrl} onCopy={handleCopyToClipboard} />*/}
+          <ResultDisplay shortenedUrl={shortenedUrl} onCopy={handleCopyToClipboard} />
         </div>
 
         <RecentURLs urls={allUrls} onCopy={handleCopyToClipboard} />
