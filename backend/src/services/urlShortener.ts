@@ -13,7 +13,7 @@ import {
 interface ShortenedURL {
   original_url: string;
   short_code: string;
-  user_Id?: string;
+  user_Id?: string | null; // Optional user ID, can be null if not provided
   created_at?: Date;
 }
 
@@ -24,7 +24,7 @@ interface ShortenedURL {
  */
 export const shortenUrl = async (
   originalUrl: string,
-): Promise<string | null> => {
+): Promise<ShortenedURL | null> => {
   // use MD5 for now
   const shortCode = crypto
     .createHash("md5")
@@ -41,7 +41,12 @@ export const shortenUrl = async (
     await setRedisItem(shortCode, originalUrl);
   }
 
-  return savedShortCode;
+  return {
+    original_url: originalUrl,
+    short_code: shortCode,
+    user_Id: null, // Assuming user ID is not provided, can be modified as needed
+    created_at: new Date(), // Set current date as creation time
+  };
 };
 
 /**
