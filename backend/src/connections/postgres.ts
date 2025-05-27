@@ -22,7 +22,8 @@ export const initPostgresClient = async (): Promise<Pool> => {
         short_code VARCHAR(10) PRIMARY KEY,
         original_url TEXT NOT NULL,
         user_id VARCHAR(50),
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        views INTEGER DEFAULT 0
       );
       -- Create a separate index for user_id column
       CREATE INDEX IF NOT EXISTS idx_shortened_urls_user_id ON shortened_urls(user_id);

@@ -2,12 +2,12 @@ import crypto from "crypto";
 import {
   setItem as setRedisItem,
   getItem as getRedisItem,
-  getAllKeys as getAllRedisKeys,
 } from "../lib/urlShortenerRedis";
 import {
   setItem as setPostgresItem,
   getItem as getPostgresItem,
   getAllItems as getAllPostgresItems,
+  updateViewCount,
 } from "../lib/urlShortenerModel";
 
 interface ShortenedURL {
@@ -61,7 +61,6 @@ export const getOriginalUrl = async (
   const cachedUrl = await getRedisItem(shortCode);
   if (cachedUrl) {
     console.log("Cache hit in Redis");
-    return cachedUrl;
   }
 
   if (!cachedUrl) {
@@ -75,6 +74,9 @@ export const getOriginalUrl = async (
 
     return originalUrl;
   }
+
+  const views = await updateViewCount(shortCode);
+  console.log("View count updated in PostgreSQL:", views);
 
   return cachedUrl;
 };
