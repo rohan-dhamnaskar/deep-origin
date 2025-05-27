@@ -1,12 +1,12 @@
 'use client';
-import { useEffect, useState, use } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
 import { getUrl } from '@/services/ShortenService';
 import { ErrorPage } from '@/components/error/ErrorPage';
 
-export default function ShortCodeRedirect({ params }: { params: { shortcode: string } }) {
-  const unwrappedParams = use(params);
-  const { shortcode } = unwrappedParams;
+export default function ShortCodeRedirect() {
+  const params = useParams();
+  const shortcode = params.shortcode as string;
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
