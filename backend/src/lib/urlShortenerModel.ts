@@ -51,16 +51,16 @@ export const getItem = async (shortCode: string): Promise<string | null> => {
   }
 };
 
-export const getAllItems = async (): Promise<any[]> => {
+export const getAllItems = async (): Promise<any[] | null> => {
   const client = getPostgresClient();
   try {
     const result: QueryResult = await client.query(
-      "SELECT short_code, original_url FROM shortened_urls",
+      "SELECT short_code, original_url, user_id, created_at FROM shortened_urls",
     );
     return result.rows;
   } catch (err) {
     console.error("Error retrieving all items from PostgreSQL:", err);
-    return [];
+    return null;
   }
 };
 
