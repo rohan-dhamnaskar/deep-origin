@@ -15,7 +15,7 @@ export function RecentURLs({ urls, onCopy }: RecentURLsProps) {
       <div className="card__header card__header--purple-pink">
         <h2 className="card__title">
           <Link2 className="form__button-icon" />
-          Recent URLs
+          All URLS sorted by views (Most popular first)
         </h2>
       </div>
       <div className="card__content">
@@ -23,15 +23,16 @@ export function RecentURLs({ urls, onCopy }: RecentURLsProps) {
           {urls.map((item, index) => (
             <div key={index} className="recent-urls__item">
               <div className="recent-urls__url-info">
-                <p className="recent-urls__original-url">{item.original_url}</p>
+                <p className="recent-urls__original-url">Original URL: {item.original_url}</p>
                 <a
-                  href={item.shortened}
+                  href={item.original_url}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="recent-urls__shortened-url"
                 >
-                  {item.short_code}
+                  Short Code: {item.short_code}
                 </a>
+                <span className="recent-urls__count">Views: {item.views}</span>
               </div>
               <button onClick={() => onCopy(item.short_code)} className="recent-urls__copy-button">
                 <Copy className="recent-urls__copy-icon" />

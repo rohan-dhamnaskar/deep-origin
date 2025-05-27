@@ -9,7 +9,7 @@ export const setItem = async (
   try {
     // Check if the short code already exists
     const existingResult: QueryResult = await client.query(
-      "SELECT * FROM shortened_urls WHERE short_code = $1",
+      "SELECT short_code FROM shortened_urls WHERE short_code = $1",
       [shortCode],
     );
     if (existingResult.rows.length > 0) {
@@ -55,7 +55,9 @@ export const getAllItems = async (): Promise<any[] | null> => {
   const client = getPostgresClient();
   try {
     const result: QueryResult = await client.query(
-      "SELECT short_code, original_url, user_id, created_at FROM shortened_urls",
+      `SELECT short_code, original_url, user_id, created_at, views 
+                    FROM shortened_urls
+                    ORDER BY views DESC`,
     );
     return result.rows;
   } catch (err) {
@@ -85,4 +87,20 @@ export const deleteItem = async (shortCode: string): Promise<boolean> => {
     console.error("Error deleting from PostgreSQL:", err);
   }
   return result;
+};
+
+export const updateViewCount = async (
+  shortCode: string,
+): Promise<number | null> => {
+  const client = getPostgresClient();
+  try {
+    const response = await client.query(
+      "UPDATE shortened_urls SET views = views + 1 WHERE short_code = $1 RETURNING views",
+      [shortCode],
+    );
+    return response.rows.length > 0 ? response.rows[0].views : null;
+  } catch (err) {
+    console.error("Error updating view count in PostgreSQL:", err);
+    return null;
+  }
 };
